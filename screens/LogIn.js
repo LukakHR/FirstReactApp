@@ -8,19 +8,11 @@ import {
   StyleSheet,
   TextInput,
 } from 'react-native';
-
 import Header from '../components/Header';
 
-const AddToListScreen = ({navigation}) => {
-  var text = ''
-  var added = false
-  var message
-
-  if (added) {
-      message = <View><Text style={styles.text}>Succesfully added</Text></View>
-  } else {
-      message = <View></View>
-  }
+const LogInScreen = ({navigation}) => {
+  var email = '';
+  var pass = '';
 
   return (
     <SafeAreaView>
@@ -28,19 +20,32 @@ const AddToListScreen = ({navigation}) => {
       <View style={styles.container}>
         <TextInput
           style={styles.input}
-          placeholder="Item"
-          defaultValue={text}
-          onChangeText={(newText) => {text = newText}}
-          clearButtonMode='while-editing'
+          placeholder="Email"
+          defaultValue={email}
+          onChangeText={(newEmail) => {
+            email = newEmail;
+          }}
+          clearButtonMode="while-editing"
+        />
+
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          defaultValue={pass}
+          password="true"
+          onChangeText={(newPass) => {
+            pass = newPass;
+          }}
+          clearButtonMode="while-editing"
         />
 
         <TouchableOpacity
           onPress={() => {
-            addToList(text);
+            logIn(email, pass);
             added = true;
-        }}
+          }}
           style={styles.buttonAdd}>
-          <Text style={styles.text}>Dodaj u listu</Text>
+          <Text style={styles.text}>Log In</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -48,8 +53,6 @@ const AddToListScreen = ({navigation}) => {
           style={styles.button}>
           <Text style={styles.text}>Povratak</Text>
         </TouchableOpacity>
-
-        {message}
       </View>
     </SafeAreaView>
   );
@@ -57,7 +60,7 @@ const AddToListScreen = ({navigation}) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 100,
+    marginTop: 150,
     justifyContent: 'center',
     alignItems: 'center',
     flex: 1,
@@ -98,10 +101,16 @@ const styles = StyleSheet.create({
   },
 });
 
-const addToList = (text) => {
-  firebase.database().ref('/ToDoList/').push({
-    listItem: text,
-  });
+const logIn = (email, pass) => {
+  firebase
+    .auth()
+    .signInWithEmailAndPassword(email, pass)
+    .then(() => {
+      console.log('User logged in');
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 };
 
-export default AddToListScreen;
+export default LogInScreen;

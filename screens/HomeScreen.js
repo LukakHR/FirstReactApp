@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   SafeAreaView,
   View,
@@ -7,10 +7,31 @@ import {
   TouchableOpacity,
   StyleSheet,
 } from 'react-native';
+import firebase from 'firebase';
 
 import Header from '../components/Header';
 
 const HomeScreen = ({navigation}) => {
+  var text = '';
+
+  const [user, setUser] = useState();
+
+  // Handle user state changes
+  function onAuthStateChanged(user) {
+    setUser(user);
+  }
+
+  useEffect(() => {
+    const subscriber = firebase.auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber;
+  }, []);
+
+  if (!user) {
+    text = 'Niste ulogirani';
+  } else {
+    text = 'Ulogirani ste ' + user.email;
+  }
+
   return (
     <SafeAreaView>
       <Header title="Home Screen" />
@@ -25,6 +46,20 @@ const HomeScreen = ({navigation}) => {
           style={styles.button}>
           <Text style={styles.text}>Dodaj u listu</Text>
         </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('LogInScreen')}
+          style={styles.button}>
+          <Text style={styles.text}>Log In</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate('SignInScreen')}
+          style={styles.button}>
+          <Text style={styles.text}>Sign In</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.info}>
+          <Text style={styles.text}>{text}</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -32,7 +67,7 @@ const HomeScreen = ({navigation}) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 80,
+    marginTop: 180,
     justifyContent: 'center',
     alignItems: 'center',
     flex: 1,
@@ -46,6 +81,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderColor: 'black',
     borderWidth: 1,
+  },
+
+  info: {
+    height: 30,
+    width: 500,
+    marginTop: 50,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   text: {
